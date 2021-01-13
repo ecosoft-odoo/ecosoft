@@ -1,0 +1,28 @@
+name: Test Install
+
+on: [pull_request, push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Install Docker
+        uses: docker-practice/actions-setup-docker@master
+        with:
+          docker_channel: nightly
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.6.12"
+      - name: Install PIP packages
+        uses: BSFishy/pip-action@v1
+        with:
+          packages: |
+            docker-compose
+            copier
+            invoke
+            pre-commit
+      - name: Invoke img-pull img-build --pull
+        run: invoke img-pull img-build --pull git-aggregate resetdb start
