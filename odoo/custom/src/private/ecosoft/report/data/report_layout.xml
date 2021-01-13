@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <template id="external_layout_ecosoft">
+            <div class="header">
+                <div class="o_clean_header">
+                    <div class="row mb8">
+                        <div class="col-6">
+                            <img
+                                t-if="company.logo"
+                                t-att-src="image_data_uri(company.logo)"
+                                alt="Logo"
+                            />
+                        </div>
+                        <div class="col-6 text-right mb4">
+                            <h4 class="mt0" t-field="company.report_header" />
+                            <div name="company_address" class="mb4">
+                                <span
+                                    class="company_address"
+                                    t-field="company.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="article o_report_layout_standard"
+                t-att-data-oe-model="o and o._name"
+                t-att-data-oe-id="o and o.id"
+                t-att-data-oe-lang="o and o.env.context.get('lang')"
+            >
+                <t t-call="web.address_layout" />
+                <t t-raw="0" />
+            </div>
+
+            <div class="footer o_boxed_footer">
+                <div class="text-center">
+                    <ul class="list-inline">
+                        <li t-if="company.phone" class="list-inline-item">Tel: <span
+                                t-field="company.phone"
+                            /></li>
+                        <li t-if="company.email" class="list-inline-item">Mail: <span
+                                t-field="company.email"
+                            /></li>
+                        <li t-if="company.website" class="list-inline-item">Web: <span
+                                t-field="company.website"
+                            /></li>
+                        <li t-if="company.vat" class="list-inline-item"><t
+                                t-esc="company.country_id.vat_label or 'Tax ID'"
+                            />: <span t-field="company.vat" /></li>
+                        <!-- Add Tax Branch -->
+                        <li t-if="company.branch" class="list-inline-item"> / <span
+                                t-field="company.branch"
+                            /></li>
+                    </ul>
+                    <div t-field="company.report_footer" />
+                    <div t-if="report_type == 'pdf'">
+                        Page: <span class="page" /> / <span class="topage" />
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <record id="external_layout_ecosoft" model="report.layout">
+            <field name="name">Ecosoft</field>
+            <field name="view_id" ref="ecosoft.external_layout_ecosoft" />
+        </record>
+
+    </data>
+</odoo>

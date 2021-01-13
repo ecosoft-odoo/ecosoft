@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_saleorder_document_remove_tax_column"
+        inherit_id="sale.report_saleorder_document"
+    >
+        <!-- Add Tax Branch -->
+        <xpath expr="//p[@t-if='doc.partner_id.vat']" position="attributes">
+            <attribute name="style">display:none;</attribute>
+        </xpath>
+        <xpath expr="//p[@t-if='doc.partner_id.vat']" position="after">
+            <div t-if="doc.partner_id.vat" class="mt16">
+                <t
+                    t-if="doc.company_id.country_id.vat_label"
+                    t-esc="doc.company_id.country_id.vat_label"
+                />
+                <t t-else="">Tax ID</t>: <span t-field="doc.partner_id.vat" />
+            </div>
+            <div t-if="doc.partner_id.branch">
+                Tax Branch: <span t-field="doc.partner_id.branch" />
+            </div>
+        </xpath>
+        <!-- Remove Tax Column from Invoice -->
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="style">display:none;</attribute>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[@name='td_taxes']" position="attributes">
+            <attribute name="style">display:none;</attribute>
+        </xpath>
+    </template>
+</odoo>

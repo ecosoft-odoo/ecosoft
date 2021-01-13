@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_salary_export_tree" model="ir.ui.view">
+        <field name="name">salary.export.tree</field>
+        <field name="model">salary.export</field>
+        <field name="arch" type="xml">
+            <tree string="Salary Export">
+                <field name="name" />
+                <field name="date" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_salary_export_form" model="ir.ui.view">
+        <field name="name">salary.export.form</field>
+        <field name="model">salary.export</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_draft"
+                        states="done"
+                        type="object"
+                        string="Set to Draft"
+                    />
+                    <button
+                        name="action_done"
+                        states="draft"
+                        type="object"
+                        string="Set to Done"
+                        class="oe_highlight"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,done"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                        </group>
+                        <group>
+                            <field name="date" />
+                            <field name="date_transfer" />
+                        </group>
+                        <field name="line_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id" />
+                                <field name="acc_number" />
+                                <field name="acc_holder_name" />
+                                <field name="amount" sum="Total" />
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_salary_export_search" model="ir.ui.view">
+        <field name="name">salary.export.search</field>
+        <field name="model">salary.export</field>
+        <field name="arch" type="xml">
+            <search string="Salary Export">
+                <field name="name" />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="State"
+                        name="state"
+                        domain="[]"
+                        context="{'group_by': 'state'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_salary_export" model="ir.actions.act_window">
+        <field name="name">Salary Export</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">salary.export</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help">Export Salary in Text File</field>
+    </record>
+
+    <menuitem
+        id="menu_salary_export"
+        parent="hr.hr_menu_hr_reports"
+        action="action_salary_export"
+        sequence="10"
+    />
+
+    <report
+        id="report_salary_export_csv"
+        model="salary.export"
+        string="Print to CSV"
+        report_type="csv"
+        name="report_csv.salary_export"
+        file="salary_export"
+        attachment_use="False"
+    />
+
+</odoo>

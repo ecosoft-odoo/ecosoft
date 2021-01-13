@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_invoice_document_remove_tax_column"
+        inherit_id="account.report_invoice_document"
+    >
+        <!-- Add Tax Branch -->
+        <xpath expr="//div[@t-if='o.partner_id.vat']" position="after">
+            <div t-if="o.partner_id.branch">
+                Tax Branch: <span t-field="o.partner_id.branch" />
+            </div>
+        </xpath>
+        <!-- Remove Tax Column from Invoice -->
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="style">display:none;</attribute>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[5]" position="attributes">
+            <attribute name="style">display:none;</attribute>
+        </xpath>
+        <!-- Add bank payment information -->
+        <xpath expr="//p[@name='comment']" position="before">
+            <t
+                t-set="partner_name"
+                t-value="o.invoice_partner_bank_id.acc_holder_name or o.invoice_partner_bank_id.partner_id.name"
+            />
+            <t
+                t-set="bank_name"
+                t-value="o.invoice_partner_bank_id.bank_id.display_name"
+            />
+            <t t-set="bank_acc_number" t-value="o.invoice_partner_bank_id.acc_number" />
+            <p
+                t-if="o.type in ('out_invoice', 'in_refund') and o.invoice_payment_state != 'paid'"
+            >
+                Pay to '<span t-esc="partner_name" />' <span
+                    t-esc="bank_name"
+                />. Account Number <span t-esc="bank_acc_number" />.
+            </p>
+        </xpath>
+    </template>
+</odoo>

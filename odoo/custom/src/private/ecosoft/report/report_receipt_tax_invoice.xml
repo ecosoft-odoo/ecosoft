@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <!-- Following 2 forms are identical,
+          diff that, one has no word "Tax Invoice" -->
+
+        <report
+            id="receipt_invoice"
+            model="account.payment"
+            string="Receipt"
+            report_type="qweb-pdf"
+            name="ecosoft.report_receipt_invoice"
+            file="ecosoft.report_receipt_invoice"
+            print_report_name="object and object.name and object.name.replace('/', '').replace('.', '') or 'False'"
+        />
+
+        <template
+            id="ecosoft.report_invoice_document_from_payments_no_tax_invoice"
+            inherit_id="account.report_invoice_document"
+            primary="True"
+        >
+            <xpath expr="//h2" position="replace">
+                <h2>Receipt <span t-if="o.name != '/'" t-field="pay.name" /></h2>
+            </xpath>
+            <xpath expr="//div[@name='invoice_date']" position="replace">
+                <div
+                    class="col-auto mw-100 mb-2"
+                    t-if="pay.payment_date"
+                    name="payment_date"
+                >
+                    <strong>Date:</strong>
+                    <p class="m-0" t-field="pay.payment_date" />
+                </div>
+            </xpath>
+            <xpath expr="//div[@name='reference']" position="after">
+                <div class="col-auto mw-100 mb-2" t-if="o.name" name="inv_reference">
+                    <strong>Invoice Reference:</strong>
+                    <p class="m-0" t-field="o.name" />
+                </div>
+            </xpath>
+            <xpath expr="//div[@id='total']/div/table" position="inside">
+               <t
+                    t-set="payments_vals"
+                    t-value="o and o._get_reconciled_info_JSON_values() or []"
+                />
+               <t t-foreach="payments_vals" t-as="payment_vals">
+                   <tr>
+                       <td>
+                           <i
+                                class="oe_form_field text-right oe_payment_label"
+                            >Paid on <t
+                                    t-esc="payment_vals['date']"
+                                    t-options='{"widget": "date"}'
+                                /></i>
+                       </td>
+                       <td class="text-right">
+                           <span
+                                t-esc="payment_vals['amount']"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                            />
+                       </td>
+                   </tr>
+               </t>
+               <t t-if="len(payments_vals) > 0">
+                   <tr class="border-black">
+                       <td><strong>Amount Due</strong></td>
+                       <td class="text-right">
+                            <span t-field="o.amount_residual" />
+                       </td>
+                   </tr>
+               </t>
+            </xpath>
+            <p t-if="o.type in ('out_invoice', 'in_refund')" position="replace" />
+            <p name="comment" position="replace" />
+            <p name="payment_term" position="replace" />
+
+        </template>
+
+
+        <template id="ecosoft.report_receipt_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="pay">
+                    <t
+                        t-set="o"
+                        t-value="pay.reconciled_invoice_ids and pay.reconciled_invoice_ids[0] or pay.reconciled_invoice_ids"
+                    />  <!-- Work only with 1 invoice  per payment -->
+                    <t
+                        t-set="lang"
+                        t-value="o.invoice_user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"
+                    />
+                    <t
+                        t-call="ecosoft.report_invoice_document_from_payments_no_tax_invoice"
+                        t-lang="lang"
+                    />
+                </t>
+            </t>
+        </template>
+
+        <!-- ================================================ -->
+
+        <report
+            id="receipt_tax_invoice"
+            model="account.payment"
+            string="Receipt/Tax Invoice"
+            report_type="qweb-pdf"
+            name="ecosoft.report_receipt_tax_invoice"
+            file="ecosoft.report_receipt_tax_invoice"
+            print_report_name="object and object.name and object.name.replace('/', '').replace('.', '') or 'False'"
+        />
+
+        <template
+            id="ecosoft.report_invoice_document_from_payments"
+            inherit_id="account.report_invoice_document"
+            primary="True"
+        >
+            <xpath expr="//h2" position="replace">
+                <h2>Receipt/Tax Invoice <span
+                        t-if="o.name != '/'"
+                        t-field="pay.name"
+                    /></h2>
+            </xpath>
+            <xpath expr="//div[@name='invoice_date']" position="replace">
+                <div
+                    class="col-auto mw-100 mb-2"
+                    t-if="pay.payment_date"
+                    name="payment_date"
+                >
+                    <strong>Date:</strong>
+                    <p class="m-0" t-field="pay.payment_date" />
+                </div>
+            </xpath>
+            <xpath expr="//div[@name='reference']" position="after">
+                <div class="col-auto mw-100 mb-2" t-if="o.name" name="inv_reference">
+                    <strong>Invoice Reference:</strong>
+                    <p class="m-0" t-field="o.name" />
+                </div>
+            </xpath>
+            <xpath expr="//div[@id='total']/div/table" position="inside">
+               <t
+                    t-set="payments_vals"
+                    t-value="o and o._get_reconciled_info_JSON_values() or []"
+                />
+               <t t-foreach="payments_vals" t-as="payment_vals">
+                   <tr>
+                       <td>
+                           <i
+                                class="oe_form_field text-right oe_payment_label"
+                            >Paid on <t
+                                    t-esc="payment_vals['date']"
+                                    t-options='{"widget": "date"}'
+                                /></i>
+                       </td>
+                       <td class="text-right">
+                           <span
+                                t-esc="payment_vals['amount']"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                            />
+                       </td>
+                   </tr>
+               </t>
+               <t t-if="len(payments_vals) > 0">
+                   <tr class="border-black">
+                       <td><strong>Amount Due</strong></td>
+                       <td class="text-right">
+                            <span t-field="o.amount_residual" />
+                       </td>
+                   </tr>
+               </t>
+            </xpath>
+            <p t-if="o.type in ('out_invoice', 'in_refund')" position="replace" />
+            <p name="comment" position="replace" />
+            <p name="payment_term" position="replace" />
+
+        </template>
+
+        <template id="ecosoft.report_receipt_tax_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="pay">
+                    <t
+                        t-set="o"
+                        t-value="pay.reconciled_invoice_ids and pay.reconciled_invoice_ids[0] or pay.reconciled_invoice_ids"
+                    />  <!-- Work only with 1 invoice  per payment -->
+                    <t
+                        t-set="lang"
+                        t-value="o.invoice_user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"
+                    />
+                    <t
+                        t-call="ecosoft.report_invoice_document_from_payments"
+                        t-lang="lang"
+                    />
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>
