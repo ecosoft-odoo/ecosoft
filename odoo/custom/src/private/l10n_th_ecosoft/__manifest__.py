@@ -10,7 +10,7 @@ Chart of Accounts for Thailand.
 
 Thai accounting chart and localization.
     """,
-    "author": "Ecosoft,Odoo Community Association (OCA)",
+    "author": "Ecosoft",
     "license": "AGPL-3",
     "website": "http://ecosoft.co.th/",
     "depends": ["account"],
