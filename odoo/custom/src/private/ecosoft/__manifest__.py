@@ -20,7 +20,7 @@
         "report_csv",
         "excel_import_export",
     ],
-    "author": "Ecosoft,Odoo Community Association (OCA)",
+    "author": "Ecosoft",
     "license": "AGPL-3",
     "data": [
         # Forms and Reports
